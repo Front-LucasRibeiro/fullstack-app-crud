@@ -1,0 +1,74 @@
+services:
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${DB_ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+    networks:
+      - postgres
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "3000:3000"
+    develop:
+      watch:
+        - path: ./backend
+          action: sync
+          target: /app
+          ignore: 
+            - node_modules/
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://${DB_USERNAME}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
+    networks:
+        - backend
+        - frontend
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    ports:
+      - "8080:8080"
+    develop:
+      watch:
+        - path: ./frontend
+          action: sync
+          target: /app
+          ignore: 
+            - node_modules/
+    depends_on:
+      - postgres 
+    networks:
+      - backend
+      - frontend 
+
+networks:
+  backend:
+  frontend:
+  postgres:
+
+volumes:
+  postgres_data:

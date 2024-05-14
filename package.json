@@ -1,0 +1,12 @@
+{
+  "name": "fullstack-app-crud",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "docker-compose -f docker-compose.dev.yml up --watch",
+    "build": "docker-compose -f docker-compose.prod.yml up -d --build"
+  },
+  "author": "Lucas Maranho",
+  "license": "ISC"
+}
