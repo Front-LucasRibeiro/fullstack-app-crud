@@ -1,44 +1,69 @@
 import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { createUserSchema, updateUserSchema } from './validation/user.validation';
+import { v4 as uuid } from 'uuid';
+
+import { UserService } from './user.service';
 import { UserEntity } from './user.entity';
 import { UserRepository } from './user.repository';
-import { createUserSchema } from './user.validation';
+import { CreateUserDTO } from './dto/CreateUser.dto';
+import { ListUserDTO } from './dto/ListUser.dto';
+import { UpdateUserDTO } from './dto/UpdateUser.dto';
 
 @Controller('/users')
 export class UserController {
 
-  constructor(private userRepository: UserRepository) { }
+  constructor(
+    private userRepository: UserRepository,
+    private userService: UserService
+  ) { }
 
   @Post()
-  async createUser(@Body() dataUsers: UserEntity) {
+  async createUser(@Body() dataUsers: CreateUserDTO) {
+    try {
+      const value = await createUserSchema.validateAsync(dataUsers);
 
-    const validationResult = await createUserSchema.validate(dataUsers);
+      const userEntity = new UserEntity();
+      userEntity.email = value.email;
+      userEntity.password = value.password;
+      userEntity.name = value.name;
+      userEntity.id = uuid();
 
-    if (validationResult.error) {
-      throw new Error(validationResult.error.message);
+      this.userService.createUserService(userEntity);
+      
+      return {
+        user: new ListUserDTO(userEntity.id, userEntity.name),
+        message: "Usuário criado com sucesso."
+      }
+
+    } catch (error) {
+      throw new Error(error.message);
     }
-
-    const newUser = await this.userRepository.save(dataUsers);
-    return newUser;
   }
 
   @Get()
-  async listUsers(): Promise<UserEntity[]> {
-    return this.userRepository.list();
+  async listUsers() {
+    const usersSaved = await this.userService.listUsersService();
+    return usersSaved;
   }
 
   @Put('/:id')
-  async updateUser(@Param('id') id: string, @Body() newData: UserEntity) {
-    const userUpdated = await this.userRepository.update(id, newData);
-
-    return {
-      user: userUpdated,
-      message: 'Usuário atualizado com sucesso'
+  async updateUser(@Param('id') id: string, @Body() newData: UpdateUserDTO) {
+    try {
+      const value = await updateUserSchema.validateAsync(newData);
+      const userUpdated = await this.userService.updateUserService(id, value);
+  
+      return {
+        user: userUpdated,
+        message: 'Usuário atualizado com sucesso'
+      }
+    } catch (error) {
+      throw new Error(error.message);
     }
   }
 
   @Delete('/:id')
   async deleteUser(@Param('id') id: string) {
-    const userDeleted = await this.userRepository.remove(id)
+    const userDeleted = await this.userService.deleteUserService(id)
 
     return {
       user: userDeleted,

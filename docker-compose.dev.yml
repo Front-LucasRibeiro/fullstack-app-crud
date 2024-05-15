@@ -5,11 +5,14 @@ services:
     environment:
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /data/postgres
     ports:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend
+      - postgres
 
   pgadmin:
     image: dpage/pgadmin4
@@ -22,6 +25,7 @@ services:
       - postgres
     networks:
       - postgres
+      - backend
 
   backend:
     build:
@@ -39,8 +43,6 @@ services:
             - node_modules/
     depends_on:
       - postgres
-    environment:
-      DATABASE_URL: postgres://${DB_USERNAME}:${DB_PASSWORD}@postgres:${DB_PORT}/${DB_NAME}
     networks:
         - backend
         - frontend

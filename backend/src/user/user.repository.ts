@@ -3,9 +3,19 @@ import { UserEntity } from "./user.entity";
 
 @Injectable()
 export class UserRepository {
-  private users: UserEntity[] = [
-    {id:1, name: "xx", password: '123', email: "dasd", createdAt: "ds", deletedAt: "", updateAt: "cd"}
-  ];
+  private users: UserEntity[] = [];
+
+  private searchById(id: string) {
+    const userExists = this.users.find(
+      userSaved => userSaved.id === id
+    );
+
+    if (!userExists) {
+      throw new Error('Usuário não encontrado')
+    }
+
+    return userExists;
+  }
 
   async save(user: UserEntity) {
     this.users.push(user);
@@ -16,10 +26,27 @@ export class UserRepository {
   }
 
   async update(id: string, newData: Partial<UserEntity>) {
-    return this.users;
+    const user = this.searchById(id)
+    
+
+    Object.entries(newData).forEach(([key, value]) => {
+      if (key === 'id') {
+        return; 
+      }
+
+      user[key] = value;
+    })
+
+    return user
   }
 
   async remove(id: string) {
-    return this.users;
+    const user = this.searchById(id)
+
+    this.users = this.users.filter(userSaved => {
+      return userSaved.id !== id
+    })
+
+    return user;
   }
 }
