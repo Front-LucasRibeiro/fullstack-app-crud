@@ -1,10 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
-import { createUserSchema, updateUserSchema } from './validation/user.validation';
-import { v4 as uuid } from 'uuid';
+import { CacheInterceptor } from '@nestjs/cache-manager';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseInterceptors } from '@nestjs/common';
+import { UserValidation } from './validation/user.validation';
 
 import { UserService } from './user.service';
-import { UserEntity } from './user.entity';
-import { UserRepository } from './user.repository';
 import { CreateUserDTO } from './dto/CreateUser.dto';
 import { ListUserDTO } from './dto/ListUser.dto';
 import { UpdateUserDTO } from './dto/UpdateUser.dto';
@@ -13,34 +11,27 @@ import { UpdateUserDTO } from './dto/UpdateUser.dto';
 export class UserController {
 
   constructor(
-    private userRepository: UserRepository,
-    private userService: UserService
+    private userService: UserService,
+    private userValidation: UserValidation
   ) { }
 
   @Post()
   async createUser(@Body() dataUsers: CreateUserDTO) {
     try {
-      const value = await createUserSchema.validateAsync(dataUsers);
+      const value = await this.userValidation.createUserSchema.validateAsync(dataUsers);
+      const userCreated = await this.userService.createUserService(value);
 
-      const userEntity = new UserEntity();
-      userEntity.email = value.email;
-      userEntity.password = value.password;
-      userEntity.name = value.name;
-      userEntity.id = uuid();
-
-      this.userService.createUserService(userEntity);
-      
       return {
-        user: new ListUserDTO(userEntity.id, userEntity.name),
-        message: "Usuário criado com sucesso."
-      }
-
+        usuario: new ListUserDTO(value.id, value.nome, value.email),
+        messagem: 'usuário criado com sucesso',
+      };
     } catch (error) {
       throw new Error(error.message);
     }
   }
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
   async listUsers() {
     const usersSaved = await this.userService.listUsersService();
     return usersSaved;
@@ -49,7 +40,7 @@ export class UserController {
   @Put('/:id')
   async updateUser(@Param('id') id: string, @Body() newData: UpdateUserDTO) {
     try {
-      const value = await updateUserSchema.validateAsync(newData);
+      const value = await this.userValidation.updateUserSchema.validateAsync(newData);
       const userUpdated = await this.userService.updateUserService(id, value);
   
       return {

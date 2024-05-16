@@ -4,6 +4,7 @@ import { ListUserDTO } from "./dto/ListUser.dto";
 import { UserEntity } from "./user.entity";
 import { Repository } from "typeorm";
 import { UpdateUserDTO } from "./dto/UpdateUser.dto";
+import { CreateUserDTO } from "./dto/CreateUser.dto";
 
 @Injectable()
 export class UserService{
@@ -12,14 +13,20 @@ export class UserService{
     private readonly userRepository: Repository<UserEntity>
   ) { }
   
-  async createUserService(userEntity: UserEntity) {
-    await this.userRepository.save(userEntity);
+  async createUserService(dataUser: CreateUserDTO) {
+    const userEntity = new UserEntity();
+
+    userEntity.email = dataUser.email;
+    userEntity.password = dataUser.password;
+    userEntity.name = dataUser.name;
+
+    return this.userRepository.save(userEntity);
   }
 
   async listUsersService() {
     const usersSaved = await this.userRepository.find();
     const userList = usersSaved.map(
-      (user) => new ListUserDTO(user.id, user.name)
+      (user) => new ListUserDTO(user.id, user.name, user.email)
     )
 
     return userList;

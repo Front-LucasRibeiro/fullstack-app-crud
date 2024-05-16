@@ -8,12 +8,12 @@ import {
 } from 'typeorm'
 
 @Entity({ name: 'users'})
-export class UserEntity {
+export class UserEntity {   
 
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ name: 'name', length: 100, nullable: false})
+  @Column({ name: 'name', length: 100, nullable: false })
   name: string;
 
   @Column({ name: 'email', length: 70, nullable: false})

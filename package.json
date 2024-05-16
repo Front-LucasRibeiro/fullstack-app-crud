@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "docker-compose -f docker-compose.dev.yml up --watch",
+    "create": "docker-compose -f docker-compose.dev.yml up --build",
     "build": "docker-compose -f docker-compose.prod.yml up -d --build"
   },
   "author": "Lucas Maranho",

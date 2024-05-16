@@ -1,6 +1,6 @@
 <template>
   <div>
-    pera
+    pera maçaa
   </div>
 </template>
 
