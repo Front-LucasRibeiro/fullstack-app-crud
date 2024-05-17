@@ -11,4 +11,4 @@ import { UserValidation } from "./validation/user.validation";
   providers: [UserValidation, UserService],
   exports: [UserService]
 })
-export class UserModule{}
+export class UserModule{} 

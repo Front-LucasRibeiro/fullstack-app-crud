@@ -16,7 +16,7 @@ export class UserController {
   constructor(
     private userService: UserService,
     private userValidation: UserValidation,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) { }
 
   @Post()
@@ -25,14 +25,14 @@ export class UserController {
       const value = await this.userValidation.createUserSchema.validateAsync(dataUsers);
       const sal = this.configService.get<string>('SAL_PASSWORD')
       const hashedPassword = await bcrypt.hash(value.password, sal); 
-      const userCreated = await this.userService.createUserService({ ...value, password: hashedPassword});
+      await this.userService.createUserService({ ...value, password: hashedPassword});
       
       return {
         usuario: new ListUserDTO(value.id, value.name, value.email),
-        messagem: 'usuário criado com sucesso',
-      };
+        messagem: 'usuário criado com sucesso', 
+      }; 
     } catch (error) {
-      throw new Error(error.message);
+      throw new Error(error.message); 
     }
   }
 
@@ -46,14 +46,14 @@ export class UserController {
   }
 
   @Put('/:id')
-  @UseGuards(AuthenticationGuard)
+  @UseGuards(AuthenticationGuard)    
   async updateUser(@Param('id') id: string, @Body() newData: UpdateUserDTO) {
     try {
       const value = await this.userValidation.updateUserSchema.validateAsync(newData);
       const userUpdated = await this.userService.updateUserService(id, value);
   
       return {
-        user: userUpdated,
+        user: id,
         message: 'Usuário atualizado com sucesso'
       }
     } catch (error) {
