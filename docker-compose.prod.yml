@@ -20,8 +20,20 @@ services:
       - "3001:3001"
     depends_on:
       - postgres
+      - redis
     networks:
-      - backend 
+      - backend
+      - frontend
+
+  redis:
+    image: redis:7.0-alpine
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    volumes:
+      - redis:/data
+    networks:
+      - postgres
+      - backend
 
   frontend:
     build:
@@ -31,12 +43,16 @@ services:
     ports:
       - "80:8080"
     depends_on:
-      - postgres
+      - backend
     networks:
-      - backend 
+      - backend
+      - frontend 
 
 networks:
   backend:
+  frontend:
+  postgres:
 
 volumes:
   postgres_data:
+  redis:

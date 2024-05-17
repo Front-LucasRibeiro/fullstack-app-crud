@@ -3,9 +3,7 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
-import { redisStore } from 'cache-manager-redis-yet';
 import { PostgresConfigService } from './config/postgres.config.service';
-
 
 @Module({
   imports: [
@@ -14,15 +12,15 @@ import { PostgresConfigService } from './config/postgres.config.service';
       isGlobal: true 
     }),
     TypeOrmModule.forRootAsync({
-      useClass: PostgresConfigService,
+      useClass: PostgresConfigService, 
       inject: [PostgresConfigService] 
     }),
     CacheModule.registerAsync({
-      useFactory: async () => ({
-        store: await redisStore({ ttl: 10 * 1000 })
+      useFactory: () => ({
+        ttl: 5,
       }),
-      isGlobal: true
-    }),     
-  ],
+      isGlobal: true,
+    })
+  ], 
 })
 export class AppModule {}

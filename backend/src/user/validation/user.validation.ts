@@ -1,5 +1,4 @@
 import { joiPtBr } from './joi-pt-br';
-import { UserRepository } from '../user.repository';
 import { Injectable } from '@nestjs/common';
 import { UserService } from '../user.service';
 
@@ -7,7 +6,7 @@ import { UserService } from '../user.service';
 @Injectable()
 export class UserValidation{
 
-  constructor(
+  constructor( 
     private userService: UserService
   ) {}
 
