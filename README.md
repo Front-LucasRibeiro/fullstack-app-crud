@@ -9,10 +9,13 @@
 # Frontend 
  - VueJS - http://localhost:8080
 
+## Design
+ - 
+
 ## Run project development
  - npm start (creates development environment and watched file changes)
  - npm create (Create and recreate containers docker)
 
 ## Run project production
- - npm run build
+ - npm run build (compiles files for production)
  - http://localhost:80

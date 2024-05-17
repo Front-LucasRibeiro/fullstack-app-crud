@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
-import { UserModule } from './user/user.module';
+import { UserModule } from './modules/user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 import { PostgresConfigService } from './config/postgres.config.service';
+import { AuthenticationModule } from './modules/authentication/authentication.module';
 
-@Module({
+@Module({ 
   imports: [
     UserModule,
+    AuthenticationModule,
     ConfigModule.forRoot({ 
       isGlobal: true 
     }),
@@ -19,8 +21,8 @@ import { PostgresConfigService } from './config/postgres.config.service';
       useFactory: () => ({
         ttl: 5,
       }),
-      isGlobal: true,
-    })
+      isGlobal: true,  
+    }),
   ], 
 })
 export class AppModule {}

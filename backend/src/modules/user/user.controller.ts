@@ -1,5 +1,5 @@
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
-import { Body, Controller, Delete, Get, Param, Post, Put, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserValidation } from './validation/user.validation';
 import { ConfigService } from '@nestjs/config';
 
@@ -8,10 +8,11 @@ import { CreateUserDTO } from './dto/CreateUser.dto';
 import { ListUserDTO } from './dto/ListUser.dto';
 import { UpdateUserDTO } from './dto/UpdateUser.dto';
 import * as bcrypt from 'bcryptjs';
+import { AuthenticationGuard } from '../authentication/authentication.guard';
 
 @Controller('/users')
 export class UserController {
- 
+  
   constructor(
     private userService: UserService,
     private userValidation: UserValidation,
@@ -36,6 +37,7 @@ export class UserController {
   }
 
   @Get()
+  @UseGuards(AuthenticationGuard)
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(10 * 1000) //10 seg
   async listUsers() {
@@ -44,6 +46,7 @@ export class UserController {
   }
 
   @Put('/:id')
+  @UseGuards(AuthenticationGuard)
   async updateUser(@Param('id') id: string, @Body() newData: UpdateUserDTO) {
     try {
       const value = await this.userValidation.updateUserSchema.validateAsync(newData);
@@ -59,6 +62,7 @@ export class UserController {
   }
 
   @Delete('/:id')
+  @UseGuards(AuthenticationGuard)
   async deleteUser(@Param('id') id: string) {
     const userDeleted = await this.userService.deleteUserService(id)
 
