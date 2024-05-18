@@ -6,6 +6,8 @@ async function bootstrap() {
     logger: ['debug', 'error', 'log', 'verbose', 'warn'],
   });
 
+  app.enableCors();
+
   await app.listen(3000);
 }
 bootstrap();

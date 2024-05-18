@@ -1,5 +1,5 @@
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
-import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UserValidation } from './validation/user.validation';
 import { ConfigService } from '@nestjs/config';
 
@@ -24,6 +24,9 @@ export class UserController {
     try {
       const value = await this.userValidation.createUserSchema.validateAsync(dataUsers);
       const sal = this.configService.get<string>('SAL_PASSWORD')
+
+      console.log('value', value)
+
       const hashedPassword = await bcrypt.hash(value.password, sal); 
       await this.userService.createUserService({ ...value, password: hashedPassword});
       
@@ -32,7 +35,7 @@ export class UserController {
         messagem: 'usuário criado com sucesso', 
       }; 
     } catch (error) {
-      throw new Error(error.message); 
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 

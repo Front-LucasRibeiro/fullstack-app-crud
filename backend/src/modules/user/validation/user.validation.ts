@@ -20,13 +20,19 @@ export class UserValidation{
   public createUserSchema = this.baseSchemaCreated.custom(async (value, helpers) => {
 
     const users = await this.userService.listUsersService();
-  
     const userExists = users.some(user => user.email === value.email);
+    let message = '';
+
     if (userExists) {
+      message = 'Este email já está cadastrado!'
       throw new Error('Este email já está cadastrado!');
     }
-  
-    return value;
+
+    if (message !== '') {
+      return message
+    } else {
+      return value
+    }
   });
   
   public updateUserSchema = joiPtBr.object({

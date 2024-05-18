@@ -1,0 +1,35 @@
+@use './reset';
+@use './variables' as var;
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
+:root {
+  font-family: var.$main-font;
+}
+
+html,body{
+  font-size: 16px;
+
+  #app{
+    display: grid;
+    min-height: 100vh;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+  }
+
+  main{
+    max-width: 100vw;
+  }
+}
+
+.container{
+  max-width: 1920px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 14px;
+}
+
+
+
+
+

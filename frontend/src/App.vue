@@ -1,26 +1,15 @@
-<template>
-  <!-- <img alt="Vue logo" src="./assets/logo.png"> -->
-  <HelloWorld msg="Welcome to Your Vuex.js App "/>  
-</template>   
-      
-<script>
-import HelloWorld from './components/HelloWorld.vue' 
- 
-export default { 
-  name: 'App',
-  components: {
-    HelloWorld
-  }
-}
+<script setup lang="ts">
+  import Header from './components/Header.vue'
+  import Footer from './components/Footer.vue'
+  import InfoModal from './components/InfoModal.vue'
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
+<template>
+  <Header v-if="$route.name !== 'Login' && $route.name !== 'Cadastrar'" />
+  <main>
+    <router-view></router-view>
+    <InfoModal />
+  </main>
+  <Footer v-if="$route.name !== 'Login' && $route.name !== 'Cadastrar'" />
+</template>
+

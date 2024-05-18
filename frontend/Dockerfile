@@ -2,10 +2,11 @@
 FROM node:20-alpine AS development
 WORKDIR /app
 COPY ./package*.json ./
-RUN npm install --production # Instala dependências de produção
+RUN apk add --no-cache python3 
+RUN npm ci 
 COPY ./ ./ 
 EXPOSE 8080
-CMD ["npm", "run", "serve"]
+CMD ["npm", "run", "dev"]
 
 # Stage 2: Produção (imagem otimizada)
 FROM node:20-alpine AS production
@@ -17,4 +18,4 @@ COPY nginx/ /usr/share/nginx/html
 RUN apt-get update && apt-get install -y nginx
 USER node
 EXPOSE 80 
-CMD ["nginx", "-g", "daemon off;"] 
+CMD ["nginx", "-g", "daemon off;"]
